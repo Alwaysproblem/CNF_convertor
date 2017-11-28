@@ -97,4 +97,3 @@ ENV/
 
 # mypy
 .mypy_cache/
-convert2CNF.py
