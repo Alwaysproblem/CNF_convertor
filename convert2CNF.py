@@ -15,6 +15,8 @@
 #        or  means    Union
 
 import argparse
+from binarytree import *
+from stack import *
 
 def parserArgument():
     """
@@ -50,7 +52,7 @@ class CNF(object):
         """
         pass
 
-    def CNF_generator(self):
+    def CNF_simplifier(self):
         """
         simplify the non-CNF proposition. 
         """
@@ -69,6 +71,10 @@ class CNF(object):
 if __name__ == '__main__':
     # import doctest
     argv = parserArgument()
+    a = BinaryTree()
+    b = Stack()
+    print(b)
+    print(a)
     # pro_after_CNF = CNF(argv.proposition)
     # print(argv.proposition)
 
