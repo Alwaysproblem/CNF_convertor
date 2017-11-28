@@ -30,19 +30,35 @@ class CNF(object):
     def __init__(self, proposition):
         self.prop = proposition
 
-    def funcname(self, parameter_list):
-        pass
 
     def is_CNF(self):
+        """
+        check if it satisfy CNF rules.
+        """
         pass
 
     def morgan_rules(self, mode):
+        """
+        the converting rules --- De Morgan law.
+        """
         pass
 
     def gen_tries(self):
+        """
+        generate the binary tries for input proposition.
+        """
+        pass
+
+    def CNF_generator(self):
+        """
+        simplify the non-CNF proposition. 
+        """
         pass
 
     def showCNF(self):
+        """
+        showing the CNF result.
+        """
         pass
 
 
@@ -50,8 +66,9 @@ class CNF(object):
 
 
 if __name__ == '__main__':
+    # import doctest
     argv = parserArgument()
-    pro_after_CNF = CNF(argv.proposition)
+    # pro_after_CNF = CNF(argv.proposition)
     # print(argv.proposition)
 
 
