@@ -13,7 +13,6 @@
 #        and means interception
 #        or  means Union
 
-
 import argparse
 import re
 
@@ -72,3 +71,7 @@ if __name__ == "__main__":
     argv = parserArgument()
     # print(argv.proposition)
     r = Resolution(argv.porposition)
+
+
+
+    
