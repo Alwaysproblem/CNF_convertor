@@ -413,7 +413,16 @@ class BinaryTree:
             self.left_node._print_binary_tree(n + 1, height)
             print('      ' * n, self.value, sep = '')
             self.right_node._print_binary_tree(n + 1, height)
-            
+
+    # def _print_binary_tree(self, n, height):
+    #     queue = list()
+    #     queue.append(self.value)
+
+    #     for i in range(n, height):
+    #         value = queue[0]
+    #         del(queue[0])
+    #         print
+
     def pre_order_traversal(self):
         '''
         >>> t = BinaryTree()
@@ -480,9 +489,9 @@ class BinaryTree:
         values.append(self.value)
         return values
 
-           
+
+
+
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()    
-
-    
+    doctest.testmod()
