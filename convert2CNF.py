@@ -17,6 +17,7 @@
 import argparse
 from binarytree import *
 from stack import *
+import copy
 
 def parserArgument():
     """
@@ -109,7 +110,7 @@ class CNF(object):
         !(p or q) == !p and !q
         !(p and q) == !p or !q
 
-        >>> from binarytree import BinaryTree 
+        >>> from binarytree import BinaryTree
         >>> t = BinaryTree("neg")
         >>> t.left_node = BinaryTree("neg")
         >>> t.left_node.left_node = BinaryTree("p")
@@ -160,6 +161,42 @@ class CNF(object):
             pass
         return BT
 
+
+    def or_and(self, BT):
+        """
+        (p and q) or c = (p or c) and (q or c)
+
+        """ 
+        if BT.value == 'or':
+            if BT.left_node.value == 'and':
+                BT.value = "and"
+                BT.left_node.value = 'or'
+                right_copy_tree = copy.deepcopy(BT.right_node)
+                new_tree = BinaryTree("or")
+                BT.right_node, new_tree.right_node = new_tree, BT.right_node
+                BT.right_node.left_node = BT.left_node.right_node
+                BT.left_node.right_node = right_copy_tree
+
+            elif BT.right_node.value == 'and':
+                BT.value = "and"
+                BT.right_node.value = 'or'
+                right_copy_tree = copy.deepcopy(BT.left_node)
+                new_tree = BinaryTree("or")
+
+                BT.left_node, new_tree.left_node = new_tree, BT.left_node
+                BT.left_node.right_node = BT.right_node.left_node
+                BT.right_node.left_node = right_copy_tree
+
+            else:
+                pass
+        else:
+            pass
+
+        return BT
+
+    def and_or_and(self, BT):
+        pass
+
     def morgan_rules(self, mode):
         """
         the converting rules --- De Morgan law.
@@ -192,21 +229,53 @@ if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
 
-    r = BinaryTree("neg")
-    r.left_node = BinaryTree("or")
+    # r = BinaryTree("neg")
+    # r.left_node = BinaryTree("and")
+    # r.left_node.left_node = BinaryTree("p")
+    # r.left_node.right_node = BinaryTree("q")
+    # r.print_binary_tree()
+
+    # t = BinaryTree("and")
+    # t.left_node = BinaryTree("neg")
+    # t.left_node.left_node = BinaryTree("p")
+    # t.right_node = BinaryTree("neg")
+    # t.right_node.left_node = BinaryTree("q")
+    # t.print_binary_tree()
+
+    ### the test for or-and law!!
+    # r = BinaryTree("or")
+    # r.left_node = BinaryTree("and")
+    # r.left_node.left_node = BinaryTree("p")
+    # r.left_node.right_node = BinaryTree("q")
+    # r.right_node = BinaryTree("c")
+    # print("\nthe or_left_and tree:")
+    # r.print_binary_tree()
+
+    # r = BinaryTree("or")
+    # r.right_node = BinaryTree("and")
+    # r.right_node.left_node = BinaryTree("p")
+    # r.right_node.right_node = BinaryTree("q")
+    # r.left_node = BinaryTree("c")
+
+    # print("\nthe or_right_and tree:")
+    # r.print_binary_tree()
+
+    # the test for and-or-and law
+    r = BinaryTree("or")
+    r.right_node = BinaryTree("and")
+    r.right_node = BinaryTree("and")
+    r.right_node.left_node = BinaryTree("p")
+    r.right_node.right_node = BinaryTree("q")
     r.left_node.left_node = BinaryTree("p")
     r.left_node.right_node = BinaryTree("q")
+    print("\nthe and-or-and tree:")
     r.print_binary_tree()
-    t = BinaryTree("and")
-    t.left_node = BinaryTree("neg")
-    t.left_node.left_node = BinaryTree("p")
-    t.right_node = BinaryTree("neg")
-    t.right_node.right_node = BinaryTree("p")
-    t.print_binary_tree()
 
 
     a = CNF("")
-    x = a.neg_and_or(r,'neg-or')
+    # x = a.or_and(r)
+    x = a.and_or_and(r)
+    print("after converting:")
     x.print_binary_tree()
 
     # argv = parserArgument()
