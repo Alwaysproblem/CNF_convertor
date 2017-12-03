@@ -168,7 +168,7 @@ class CNF(object):
 
         """ 
         if BT.value == 'or':
-            if BT.left_node.value == 'and':
+            if BT.left_node.value == 'and' and BT.right_node.value != 'and':
                 BT.value = "and"
                 BT.left_node.value = 'or'
                 right_copy_tree = copy.deepcopy(BT.right_node)
@@ -177,7 +177,7 @@ class CNF(object):
                 BT.right_node.left_node = BT.left_node.right_node
                 BT.left_node.right_node = right_copy_tree
 
-            elif BT.right_node.value == 'and':
+            elif BT.right_node.value == 'and' and BT.left_node.value != 'and':
                 BT.value = "and"
                 BT.right_node.value = 'or'
                 right_copy_tree = copy.deepcopy(BT.left_node)
@@ -195,7 +195,32 @@ class CNF(object):
         return BT
 
     def and_or_and(self, BT):
-        pass
+        """
+        (p and q) or (r and t) = (p or r) and (p or t) and (q or r) and (q or t).
+        """
+        if BT.value == 'or':
+            if BT.left_node.value == 'and' and BT.right_node.value == 'and':
+                BT.value = 'and'
+                new_tree_list = [BinaryTree("or") for _ in range(0,4)]
+                new_tree_list[0].left_node = copy.deepcopy(BT.left_node.left_node)
+                new_tree_list[0].right_node = copy.deepcopy(BT.right_node.left_node)
+                new_tree_list[1].left_node = copy.deepcopy(BT.left_node.left_node)
+                new_tree_list[1].right_node = copy.deepcopy(BT.right_node.right_node)
+                new_tree_list[2].left_node = copy.deepcopy(BT.left_node.right_node)
+                new_tree_list[2].right_node = copy.deepcopy(BT.right_node.left_node)
+                new_tree_list[3].left_node = copy.deepcopy(BT.left_node.right_node)
+                new_tree_list[3].right_node = copy.deepcopy(BT.right_node.right_node)
+    
+                BT.left_node.left_node = new_tree_list[0]
+                BT.left_node.right_node = new_tree_list[1]
+                BT.right_node.left_node = new_tree_list[2]
+                BT.right_node.right_node = new_tree_list[3]
+            else:
+                pass
+        else:
+            pass
+        return BT
+
 
     def morgan_rules(self, mode):
         """
@@ -263,9 +288,9 @@ if __name__ == '__main__':
     # the test for and-or-and law
     r = BinaryTree("or")
     r.right_node = BinaryTree("and")
-    r.right_node = BinaryTree("and")
-    r.right_node.left_node = BinaryTree("p")
-    r.right_node.right_node = BinaryTree("q")
+    r.left_node = BinaryTree("and")
+    r.right_node.left_node = BinaryTree("r")
+    r.right_node.right_node = BinaryTree("t")
     r.left_node.left_node = BinaryTree("p")
     r.left_node.right_node = BinaryTree("q")
     print("\nthe and-or-and tree:")

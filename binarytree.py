@@ -400,6 +400,7 @@ class BinaryTree:
                     6
         <BLANKLINE>
         '''
+        print("attention: \n the up-leaf is left leaf \n the down-leaf is right leaf.")
         if self.value is None:
             return
         self._print_binary_tree(0, self.height())
