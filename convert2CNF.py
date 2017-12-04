@@ -246,10 +246,31 @@ class CNF(object):
                 pass
 
     def imp_rule(self, BT):
-        pass
+        if BT.value == 'imp':
+            BT.value = 'or'
+            insert_tree = BinaryTree("neg")
+            insert_tree.left_node = BT.left_node
+            BT.left_node = insert_tree
+            self.neg_rules(BT.left_node)
+        else:
+            pass
+        return BT
 
     def iff_rule(self, BT):
-        pass
+        if BT.value == 'iff':
+            BT.value = 'and'
+            new_tree = [BinaryTree("imp") for _ in range(2)]
+            new_tree[0].left_node = BT.left_node
+            new_tree[0].right_node = BT.right_node
+            new_tree[1].left_node = copy.deepcopy(BT.right_node)
+            new_tree[1].right_node = copy.deepcopy(BT.left_node)
+            BT.left_node = new_tree[0]
+            BT.right_node = new_tree[1]
+            self.imp_rule(BT.left_node)
+            self.imp_rule(BT.right_node)
+        else:
+            pass
+        return BT
 
     def morgan_rules(self, mode):
         """
@@ -349,12 +370,28 @@ if __name__ == '__main__':
     # print("\nthe and-or-and tree:")
     # r.print_binary_tree()
 
+    ### test for imp_rules
+    # r = BinaryTree("imp")
+    # r.left_node = BinaryTree("neg")
+    # r.left_node.left_node = BinaryTree("p")
+    # r.right_node = BinaryTree("q")
+    # r.print_binary_tree()
+
+    ### test for iff_rules
+    r = BinaryTree("iff")
+    r.left_node = BinaryTree("neg")
+    r.left_node.left_node = BinaryTree("p")
+    r.right_node = BinaryTree("neg")
+    r.right_node.left_node = BinaryTree("q")
+    r.print_binary_tree()
 
     a = CNF("")
     # x = a.or_and(r)
     # x = a.and_or_and(r)
-    a.neg_rules(r)
+    # a.neg_rules(r)
     # a.neg_neg(r)
+    # a.imp_rule(r)
+    a.iff_rule(r)
     print("after converting:")
     r.print_binary_tree()
 
