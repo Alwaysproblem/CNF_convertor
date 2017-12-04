@@ -101,9 +101,10 @@ class CNF(object):
         p
         """
         if BT.value == "neg" and BT.left_node.value == "neg":
-            return BT.left_node.left_node
-        else:
-            return BT
+            BT.value = BT.left_node.left_node.value
+            BT.right_node = BT.left_node.left_node.right_node
+            BT.left_node = BT.left_node.left_node.left_node
+        return BT
 
     def neg_and_or(self, BT, mode):
         """
@@ -221,6 +222,34 @@ class CNF(object):
             pass
         return BT
 
+    def neg_rules(self, BT):
+        """
+        find all neg rules and using the law about neg to simplify all the proposition consisiting of neg.
+        """
+        cur_tree = BT
+        stack_for_cal = Stack()
+        stack_for_cal.push(cur_tree)
+        while not stack_for_cal.is_empty():
+            cur_tree = stack_for_cal.pop()
+            if cur_tree.value == 'neg':
+                if cur_tree.left_node.value == 'neg':
+                    self.neg_neg(cur_tree)
+                    stack_for_cal.push(cur_tree)
+                elif cur_tree.left_node.value in ['or', 'and']:
+                    mode = cur_tree.value + '-' + cur_tree.left_node.value
+                    self.neg_and_or(cur_tree, mode)
+                    stack_for_cal.push(cur_tree.left_node)
+                    stack_for_cal.push(cur_tree.right_node)
+                else:
+                    pass
+            else:
+                pass
+
+    def imp_rule(self, BT):
+        pass
+
+    def iff_rule(self, BT):
+        pass
 
     def morgan_rules(self, mode):
         """
@@ -255,19 +284,19 @@ if __name__ == '__main__':
     # doctest.testmod()
 
     # r = BinaryTree("neg")
+    # r.left_node = BinaryTree("neg")
+    # r.left_node.left_node = BinaryTree("and")
+    # r.left_node.left_node.left_node = BinaryTree("p")
+    # r.left_node.left_node.right_node = BinaryTree("q")
+    # r.print_binary_tree()
+
+    # r = BinaryTree("neg")
     # r.left_node = BinaryTree("and")
     # r.left_node.left_node = BinaryTree("p")
     # r.left_node.right_node = BinaryTree("q")
     # r.print_binary_tree()
 
-    # t = BinaryTree("and")
-    # t.left_node = BinaryTree("neg")
-    # t.left_node.left_node = BinaryTree("p")
-    # t.right_node = BinaryTree("neg")
-    # t.right_node.left_node = BinaryTree("q")
-    # t.print_binary_tree()
-
-    ### the test for or-and law!!
+    # ## the test for or-and law!!
     # r = BinaryTree("or")
     # r.left_node = BinaryTree("and")
     # r.left_node.left_node = BinaryTree("p")
@@ -286,22 +315,48 @@ if __name__ == '__main__':
     # r.print_binary_tree()
 
     # the test for and-or-and law
-    r = BinaryTree("or")
-    r.right_node = BinaryTree("and")
-    r.left_node = BinaryTree("and")
-    r.right_node.left_node = BinaryTree("r")
-    r.right_node.right_node = BinaryTree("t")
-    r.left_node.left_node = BinaryTree("p")
-    r.left_node.right_node = BinaryTree("q")
-    print("\nthe and-or-and tree:")
-    r.print_binary_tree()
+    # r = BinaryTree("or")
+    # r.right_node = BinaryTree("and")
+    # r.left_node = BinaryTree("and")
+    # r.right_node.left_node = BinaryTree("r")
+    # r.right_node.right_node = BinaryTree("t")
+    # r.left_node.left_node = BinaryTree("p")
+    # r.left_node.right_node = BinaryTree("q")
+    # print("\nthe and-or-and tree:")
+    # r.print_binary_tree()
+
+    # ## the test for neg_rlues.
+    # r = BinaryTree("neg")
+    # r.left_node = BinaryTree("or")
+    # r.left_node.left_node = BinaryTree("neg")
+    # r.left_node.right_node = BinaryTree("neg")
+
+    # r.left_node.left_node.left_node = BinaryTree("and")
+    # r.left_node.right_node.left_node = BinaryTree("and")
+
+    # r.left_node.left_node.left_node.left_node = BinaryTree("neg")
+    # r.left_node.left_node.left_node.right_node = BinaryTree("neg")
+
+    # r.left_node.right_node.left_node.left_node = BinaryTree("neg")
+    # r.left_node.right_node.left_node.right_node = BinaryTree("neg")
+
+    # r.left_node.left_node.left_node.left_node.left_node = BinaryTree("p")
+    # r.left_node.left_node.left_node.right_node.left_node = BinaryTree("q")
+
+    # r.left_node.right_node.left_node.left_node.left_node = BinaryTree("r")
+    # r.left_node.right_node.left_node.right_node.left_node = BinaryTree("t")
+
+    # print("\nthe and-or-and tree:")
+    # r.print_binary_tree()
 
 
     a = CNF("")
     # x = a.or_and(r)
-    x = a.and_or_and(r)
+    # x = a.and_or_and(r)
+    a.neg_rules(r)
+    # a.neg_neg(r)
     print("after converting:")
-    x.print_binary_tree()
+    r.print_binary_tree()
 
     # argv = parserArgument()
     # a = BinaryTree()
