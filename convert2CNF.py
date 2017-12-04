@@ -36,7 +36,26 @@ class CNF(object):
         self.prop_list = self.str2list()
 
     def str2list(self):
-        pass
+        ## this part can relize by using the stack if the C language is used.
+        ## but I want to simplify code and improve the efficiency,
+        ## so I use some built-in funciton.
+        """
+        process the text of input.
+        """
+        # exp_stack = Stack()
+        # while 
+        prop_list = [i for i in list(self.prop) if i != ' ']
+        # new_prop = list()
+        for i in range(len(prop_list)):
+            if prop_list[i] in ['n', 'a', 'i'] and \
+                ''.join(prop_list[i:i+3]) in ['neg', 'and', 'imp', 'iff']:
+                prop_list[i:i+3] = [''.join(prop_list[i:i+3]), '', '']
+            elif prop_list[i] == 'o' and ''.join(prop_list[i:i+2]) == 'or':
+                prop_list[i:i+2] = [''.join(prop_list[i:i+2]), '']
+            else:
+                pass
+        return ['['] + [i for i in prop_list if i != ''] + [']']
+
 
     def is_CNF(self):
         """
@@ -358,7 +377,10 @@ if __name__ == '__main__':
     # r.right_node.left_node = BinaryTree("q")
     # r.print_binary_tree()
 
-    a = CNF("")
+
+    # a = CNF('(neg r) imp (neg q)')
+    a = CNF(' neg((((neg(nea)) and (neg(ada))) or ((ifc iff n) and (a imp i)) ')
+    print(a.prop_list)
     # x = a.or_and(r)
     # x = a.and_or_and(r)
     # a.neg_rules(r)
@@ -366,9 +388,9 @@ if __name__ == '__main__':
     # a.imp_rule(r)
     # a.iff_rule(r)
     # a.or_rules(r)
-    a.morgan_rules(r)
-    print("after converting:")
-    r.print_binary_tree()
+    # a.morgan_rules(r)
+    # print("after converting:")
+    # r.print_binary_tree()
 
     # argv = parserArgument()
     # a = BinaryTree()
