@@ -17,6 +17,7 @@
 import argparse
 from binarytree import *
 from stack import *
+from collections import deque
 import copy
 
 def parserArgument():
@@ -35,6 +36,7 @@ class CNF(object):
         self.prop = proposition
         self.prop_list = self.str2list()
         self.exp_tree = BinaryTree()
+        self.CNF_simplifier()
 
     def str2list(self):
         """
@@ -160,14 +162,26 @@ class CNF(object):
         return BT
 
     def or_rules(self, BT):
-        if BT.value == 'or':
-            if BT.left_node.value == 'and' and BT.right_node.value == 'and':
-                self.and_or_and(BT)
+        """
+        the or rules -- De morgan laws
+        utilize the stack method rather than using the recursive method to put the rules into pratical.
+        """
+        cur_tree = BT
+        stack_for_cal = Stack()
+        stack_for_cal.push(cur_tree)
+        while not stack_for_cal.is_empty():
+            cur_tree = stack_for_cal.pop()
+            if cur_tree.value == 'or':
+                if cur_tree.left_node.value == 'and' and cur_tree.right_node.value == 'and':
+                    self.and_or_and(cur_tree)
+                    stack_for_cal.push(cur_tree.left_node)
+                    stack_for_cal.push(cur_tree.right_node)
+                else:
+                    self.or_and(cur_tree)
+                    stack_for_cal.push(cur_tree.left_node)
+                    stack_for_cal.push(cur_tree.right_node)
             else:
-                self.or_and(BT)
-        else:
-            pass
-        return BT
+                pass
 
     def neg_rules(self, BT):
         """
@@ -199,6 +213,7 @@ class CNF(object):
             insert_tree.left_node = BT.left_node
             BT.left_node = insert_tree
             self.neg_rules(BT.left_node)
+            self.or_rules(BT)
         else:
             pass
         return BT
@@ -310,21 +325,50 @@ class CNF(object):
             return
         self.exp_tree = CNF_tree
 
+    def show_condition(self):
+        tree = copy.deepcopy(self.exp_tree)
+        display = deque()
+        display.append(tree)
+        trees = list()
+        while len(display) != 0:
+            cur_tree = display.popleft()
+            if cur_tree.value == 'and':
+                display.append(cur_tree.left_node)
+                display.append(cur_tree.right_node)
+            else:
+                trees.append(cur_tree)
 
-    def showCNF(self):
+        for tree in trees:
+            tree.print_binary_tree()
+
+    def show_expression(self, BT):
+        pass
+
+    def showCNF(self, mode = 'tree'):
         """
         showing the CNF result.
         """
-        self.exp_tree.print_binary_tree()
+        if mode == 'tree':
+            self.exp_tree.print_binary_tree()
+        elif mode == 'condition':
+            self.show_condition()
+        elif mode == 'expression':
+            self.show_expression(self.exp_tree)
 
 
 
 
 
 if __name__ == '__main__':
-    # import doctest
-    # doctest.testmod()
+    # argv = parserArgument()
+    # a = CNF('p imp ((neg q) and k)')
+    a = CNF('x imp ((c imp (p and q)) and d)')
+    a.showCNF()
+    print('condition :')
+    a.showCNF(mode = 'condition')
 
+
+    # test for the neg_rules
     # r = BinaryTree("neg")
     # r.left_node = BinaryTree("neg")
     # r.left_node.left_node = BinaryTree("and")
@@ -442,7 +486,6 @@ if __name__ == '__main__':
     # print("after converting:")
     # r.print_binary_tree()
 
-    # argv = parserArgument()
     # a = BinaryTree()
     # b = Stack()
     # print(b)
@@ -455,8 +498,7 @@ if __name__ == '__main__':
     # print(a.prop_list)
 
     # the test for CNF simplier
-    a = CNF('p iff ((neg q) and k)')
-    a.CNF_simplifier()
-    a.showCNF()
+    # a = CNF('p iff ((neg q) or k)')
+    # a.CNF_simplifier()
+    # a.showCNF()
 
- 
