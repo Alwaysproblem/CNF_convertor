@@ -225,13 +225,14 @@ class CNF(object):
         the proposition is BinaryTree.
         """
         rules = {
-            'iff': self.iff_rule,
-            'imp': self.imp_rule,
-            'neg': self.neg_rules,
-            'or' : self.or_rules
+            'iff' : self.iff_rule,
+            'imp' : self.imp_rule,
+            'neg' : self.neg_rules,
+            'or'  : self.or_rules
         }
         if mode == 'CNF':
-            rules[proposition.value](proposition)
+            if proposition.value != 'and':
+                rules[proposition.value](proposition)
         elif mode == 'DNF':
             pass
         else:
@@ -454,7 +455,7 @@ if __name__ == '__main__':
     # print(a.prop_list)
 
     # the test for CNF simplier
-    a = CNF('p iff (neg q)')
+    a = CNF('p iff ((neg q) and k)')
     a.CNF_simplifier()
     a.showCNF()
 
