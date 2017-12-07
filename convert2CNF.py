@@ -34,27 +34,33 @@ class CNF(object):
     def __init__(self, proposition):
         self.prop = proposition
         self.prop_list = self.str2list()
+        self.exp_tree = BinaryTree()
 
     def str2list(self):
-        ## this part can relize by using the stack if the C language is used.
-        ## but I want to simplify code and improve the efficiency,
-        ## so I use some built-in funciton.
         """
         process the text of input.
         """
-        # exp_stack = Stack()
-        # while 
-        prop_list = [i for i in list(self.prop) if i != ' ']
-        # new_prop = list()
-        for i in range(len(prop_list)):
-            if prop_list[i] in ['n', 'a', 'i'] and \
-                ''.join(prop_list[i:i+3]) in ['neg', 'and', 'imp', 'iff']:
-                prop_list[i:i+3] = [''.join(prop_list[i:i+3]), '', '']
-            elif prop_list[i] == 'o' and ''.join(prop_list[i:i+2]) == 'or':
-                prop_list[i:i+2] = [''.join(prop_list[i:i+2]), '']
+        pair_list = ['(', ')', '[', ']', ' ']
+        prop_list = ['['] + [i for i in list(self.prop)] + [']']
+        prop_list.reverse()
+        exp = Stack()
+
+        for e in prop_list:
+            if e not in pair_list:
+                exp.push(e)
             else:
-                pass
-        return ['['] + [i for i in prop_list if i != ''] + [']']
+                tmp = list()
+                while not exp.is_empty() and exp.peek() not in pair_list:
+                    tmp.append(exp.pop())
+                if len(tmp) != 0:
+                    exp.push(''.join(tmp))
+                else:
+                    pass
+                exp.push(e)
+        exp._data.reverse()
+        # print([i for i in exp._data if i != ' '])
+        return [i for i in exp._data if i != ' ']
+
 
 
     def is_CNF(self):
@@ -216,6 +222,7 @@ class CNF(object):
     def morgan_rules(self, proposition, mode = 'CNF'):
         """
         the converting rules --- De Morgan law.
+        the proposition is BinaryTree.
         """
         rules = {
             'iff': self.iff_rule,
@@ -257,13 +264,57 @@ class CNF(object):
         """
         simplify the non-CNF proposition. 
         """
-        pass
+        sentence = copy.deepcopy(self.prop_list)
+        pairs = {
+            ']': '[',
+            '}': '{',
+            ')': '('
+        }
+        simp_stack = Stack()
+        for word in sentence:
+            if word not in pairs:
+                simp_stack.push(word)
+            else:
+                try:
+                    arg_2 = simp_stack.pop()
+                    operator = simp_stack.pop()
+                    arg_1 = simp_stack.pop()
+
+                    if operator not in ['and', 'or', 'iff', 'imp', 'neg']:
+                        print('sir there is something wrong with your proposition.')
+                        return
+                    elif operator != 'neg':
+                        open_group_symbol = simp_stack.pop()
+                    else:
+                        open_group_symbol = arg_1
+
+                    if open_group_symbol != pairs[word]:
+                        print("I think you need to check you expression.")
+                        return
+                    else:
+                        if open_group_symbol == arg_1:
+                            new_tree = self.gen_tries(arg_2, operator, BinaryTree())
+                        else:
+                            new_tree = self.gen_tries(arg_1, operator, arg_2)
+                        self.morgan_rules(new_tree)
+                        simp_stack.push(new_tree)
+
+                except EmptyStackError:
+                    print("empty!!!")
+                    return
+        if simp_stack.is_empty() is True:
+            return
+        CNF_tree = simp_stack.pop()
+        if simp_stack.is_empty is False:
+            return
+        self.exp_tree = CNF_tree
+
 
     def showCNF(self):
         """
         showing the CNF result.
         """
-        pass
+        self.exp_tree.print_binary_tree()
 
 
 
@@ -379,8 +430,6 @@ if __name__ == '__main__':
 
 
     # a = CNF('(neg r) imp (neg q)')
-    a = CNF(' neg((((neg(nea)) and (neg(ada))) or ((ifc iff n) and (a imp i)) ')
-    print(a.prop_list)
     # x = a.or_and(r)
     # x = a.and_or_and(r)
     # a.neg_rules(r)
@@ -400,5 +449,13 @@ if __name__ == '__main__':
     # pro_after_CNF = CNF(argv.proposition)
     # print(argv.proposition)
 
+    # the test for the str2list
+    # a = CNF(' neg((((neg p_0) and (neg q )) or ((i iff n) and (a imp i)) ')
+    # print(a.prop_list)
+
+    # the test for CNF simplier
+    a = CNF('p iff (neg q)')
+    a.CNF_simplifier()
+    a.showCNF()
 
  
