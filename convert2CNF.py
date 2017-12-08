@@ -34,9 +34,10 @@ def parserArgument():
 class CNF(object):
     def __init__(self, proposition):
         self.prop = proposition
-        self.prop_list = self.str2list()
-        self.exp_tree = BinaryTree()
+        self.prop_list = self.str2list()        # prop_list is for the calculation of CNF.
+        self.exp_tree = BinaryTree()        # the expression tree of CNF.
         self.CNF_simplifier()
+        self.CNF_subtree_list = list()      # subtrees of CNF.
 
     def str2list(self):
         """
@@ -338,11 +339,48 @@ class CNF(object):
             else:
                 trees.append(cur_tree)
 
-        for tree in trees:
-            tree.print_binary_tree()
+        self.CNF_subtree_list = tree
 
+        for tree in trees:
+            # tree.print_binary_tree()
+            self.show_expression(tree)
+            print()
+
+# the non-recursive version of inorder in tree traversal.
     def show_expression(self, BT):
-        pass
+        """
+        from the right leaf to the left leaf,
+        the expression tree is printed by inorder.
+        """
+        display = Stack()
+        cur_tree = copy.deepcopy(BT)
+        display.push(cur_tree)
+        value_list = []
+        while not display.is_empty():
+            cur_tree = display.pop()
+            if cur_tree.left_node.value != None and cur_tree.right_node.value != None:
+                tmp = copy.deepcopy(cur_tree)
+                tmp.left_node = BinaryTree()
+                tmp.right_node = BinaryTree()
+                display.push(BinaryTree(')'))
+                display.push(cur_tree.left_node)
+                display.push(BinaryTree('('))
+                display.push(tmp)
+                display.push(BinaryTree(')'))
+                display.push(cur_tree.right_node)
+                display.push(BinaryTree('('))
+            elif cur_tree.left_node.value != None and cur_tree.right_node.value == None:
+                tmp = copy.deepcopy(cur_tree)
+                tmp.left_node = BinaryTree()
+                tmp.right_node = BinaryTree()
+                display.push(BinaryTree(')'))
+                display.push(cur_tree.left_node)
+                display.push(BinaryTree('('))
+                display.push(tmp)
+            else:
+                value_list.append(cur_tree.value)
+        print(''.join(value_list))
+
 
     def showCNF(self, mode = 'tree'):
         """
@@ -355,17 +393,26 @@ class CNF(object):
         elif mode == 'expression':
             self.show_expression(self.exp_tree)
 
-
+# the recursive version of inorder.
+def inorder(tree, expres):
+    if tree != None:
+        inorder(tree.left_node, expres)
+        if tree.value != None:
+            expres.append(tree.value)
+        inorder(tree.right_node, expres)
 
 
 
 if __name__ == '__main__':
     # argv = parserArgument()
-    # a = CNF('p imp ((neg q) and k)')
-    a = CNF('x imp ((c imp (p and q)) and d)')
+    a = CNF('p imp ((neg q) and k)')
+    # a = CNF('x imp ((c imp (p and q)) and d)')
     a.showCNF()
     print('condition :')
-    a.showCNF(mode = 'condition')
+    # R = list()
+    # inorder(a.exp_tree, R)
+    # print(R)
+    a.showCNF(mode = 'expression')
 
 
     # test for the neg_rules
