@@ -404,17 +404,13 @@ def inorder(tree, expres):
 
 
 if __name__ == '__main__':
-    # argv = parserArgument()
-    a = CNF('p imp ((neg q) and k)')
+    argv = parserArgument()
+    formular = CNF(argv.proposition)
+    # a = CNF('p imp ((neg q) and k)')
     # a = CNF('x imp ((c imp (p and q)) and d)')
-    a.showCNF()
-    print('condition :')
-    # R = list()
-    # inorder(a.exp_tree, R)
-    # print(R)
-    a.showCNF(mode = 'expression')
+    formular.showCNF(mode = 'condition')
 
-
+####################test#################################
     # test for the neg_rules
     # r = BinaryTree("neg")
     # r.left_node = BinaryTree("neg")
